@@ -37,13 +37,18 @@ const MCPDetail = () => {
     });
   };
 
-  const handleToggleIp = () => {
+  const handleToggleIp = async () => {
     const newIp = mcpService.toggleIpType();
     const config = mcpService.getCurrentIpConfig();
     
     // 重新获取详情以更新配置
-    fetchMCPDetail();
-    message.success(`已切换到${config.usePublicIp ? '公网' : '私网'}IP: ${newIp}`);
+    try {
+      const data = await mcpService.getMCPDetail(name);
+      setMcpData(data);
+      message.success(`已切换到${config.usePublicIp ? '公网' : '私网'}IP: ${newIp}`);
+    } catch (error) {
+      message.error('切换IP失败: ' + error.message);
+    }
   };
 
   if (loading) {
