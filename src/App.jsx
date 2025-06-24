@@ -3,7 +3,7 @@ import { Layout, Spin, Alert } from 'antd';
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import MCPList from './components/MCPList';
 import MCPDetail from './components/MCPDetail';
-import { SERVER_CONFIG } from './serverConfig.js';
+import { SERVER_CONFIG } from './config/serverConfig.js';
 import './styles/App.css';
 
 const { Header, Content } = Layout;

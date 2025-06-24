@@ -105,10 +105,6 @@ class MCPService {
           if (detailItem) {
             // 有详情数据，使用详情数据
             mcpList.push(this.convertDetailData(detailItem));
-          } else {
-            // 没有详情数据，使用兜底数据
-            console.warn(`MCPService: ${serverCode} 在 config_detail.json 中未找到，使用兜底数据`);
-            mcpList.push(this.createFallbackData(serverCode, configItem));
           }
         });
       } else {

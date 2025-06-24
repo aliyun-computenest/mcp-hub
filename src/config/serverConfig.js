@@ -1,4 +1,4 @@
-import { configLoader } from './utils/configLoader.js';
+import { configLoader } from '../utils/configLoader.js';
 
 // 服务器配置类
 class ServerConfig {
@@ -10,7 +10,8 @@ class ServerConfig {
   // 初始化配置
   async init() {
     if (!this.initialized) {
-      this.config = await configLoader.loadConfig();
+      const allConfigs = await configLoader.loadAllConfigs();
+      this.config = allConfigs.serverConfig;
       this.initialized = true;
     }
     return this.config;
