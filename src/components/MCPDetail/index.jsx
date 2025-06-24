@@ -19,8 +19,12 @@ const MCPDetail = () => {
         setMcpData(data);
         setActiveConnectionType(data.defaultConnection);
       } catch (error) {
-        message.error('获取 MCP 详情失败: ' + error.message);
         console.error('Error fetching MCP detail:', error);
+        if (error.message.includes('不存在')) {
+          message.error(`MCP 服务器 "${name}" 不存在或配置不完整`);
+        } else {
+          message.warning('获取 MCP 详情失败，显示的可能是默认配置');
+        }
       } finally {
         setLoading(false);
       }

@@ -27,7 +27,16 @@ const MCPList = () => {
       setIpConfig(config);
     } catch (error) {
       console.error('MCPList: 获取数据失败:', error);
-      message.error('获取 MCP 列表失败: ' + error.message);
+      message.warning('部分 MCP 服务器信息可能不完整，已使用默认配置');
+      // 即使出错也尝试显示可用的数据
+      try {
+        const fallbackData = await mcpService.getMCPList();
+        setMcpList(fallbackData);
+        const config = mcpService.getCurrentIpConfig();
+        setIpConfig(config);
+      } catch (fallbackError) {
+        message.error('获取 MCP 列表失败: ' + fallbackError.message);
+      }
     } finally {
       setLoading(false);
     }
