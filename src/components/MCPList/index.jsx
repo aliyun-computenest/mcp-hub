@@ -134,24 +134,6 @@ const MCPList = () => {
               </div>
             )}
             
-            <div className="mcp-connection-info">
-              <div className="connection-types">
-                <span className="connection-label">支持连接:</span>
-                {mcp.connectionTypes.map(type => (
-                  <Tag 
-                    key={type} 
-                    size="small" 
-                    color={type === mcp.defaultConnection ? 'blue' : 'default'}
-                  >
-                    {type.toUpperCase()}
-                  </Tag>
-                ))}
-              </div>
-              <div className="default-config">
-                <span className="config-label">默认配置:</span>
-                <Tag color="green">{mcp.defaultConnection.toUpperCase()}</Tag>
-              </div>
-            </div>
             
             <div className="mcp-meta">
               <Tooltip title="服务类型">

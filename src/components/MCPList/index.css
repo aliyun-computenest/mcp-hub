@@ -123,34 +123,6 @@
   gap: 4px;
 }
 
-.mcp-connection-info {
-  margin-bottom: 16px;
-  padding: 12px;
-  background: #f8f9fa;
-  border-radius: 6px;
-  font-size: 12px;
-}
-
-.connection-types {
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-
-.connection-label, .config-label {
-  color: #666;
-  font-weight: 500;
-  margin-right: 8px;
-}
-
-.default-config {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 4px;
-}
 
 .mcp-meta {
   display: flex;

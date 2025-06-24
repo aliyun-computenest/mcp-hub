@@ -28,9 +28,17 @@ export const SERVER_CONFIG = {
   
   // 生成不同类型的连接配置
   generateConfig(serverCode, type, port = 8080, path = '') {
-    const baseUrl = `http://${this.getCurrentIp()}:${port}`;
-    const serverPath = path || `/${serverCode}`;
     const token = this.getCurrentToken();
+    let baseUrl;
+    
+    // OpenAPI 使用 8000 端口，其他使用指定端口
+    if (type === 'openapi') {
+      baseUrl = `http://${this.getCurrentIp()}:8000`;
+    } else {
+      baseUrl = `http://${this.getCurrentIp()}:${port}`;
+    }
+    
+    const serverPath = path || `/${serverCode}`;
     
     switch (type) {
       case 'sse':
