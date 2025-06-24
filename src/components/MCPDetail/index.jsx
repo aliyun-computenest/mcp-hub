@@ -77,7 +77,7 @@ const MCPDetail = () => {
     key: type,
     label: (
       <span>
-        {type}
+        {type.toUpperCase()}
         {type === mcpData.defaultConnection && <Tag size="small" color="blue" style={{marginLeft: 8}}>推荐</Tag>}
       </span>
     ),
@@ -95,7 +95,7 @@ const MCPDetail = () => {
         <Input.TextArea 
           value={JSON.stringify(mcpData.connectionConfigs[type], null, 2)}
           readOnly 
-          autoSize={{ minRows: 8, maxRows: 15 }}
+          autoSize={{ minRows: 6, maxRows: 12 }}
           className="config-textarea"
         />
         <div className="config-description">
@@ -120,13 +120,7 @@ const MCPDetail = () => {
                 <li>标准的OpenAPI/REST接口</li>
                 <li>兼容性最好，易于集成</li>
                 <li>支持标准的HTTP方法和状态码</li>
-              </>
-            )}
-            {type === 'command' && (
-              <>
-                <li>本地命令行方式启动</li>
-                <li>适用于开发和测试环境</li>
-                <li>无需网络配置，直接运行</li>
+                <li>使用 URL 和 API Key 进行访问</li>
               </>
             )}
           </ul>
@@ -158,7 +152,7 @@ const MCPDetail = () => {
             <h1>{mcpData.name}</h1>
             <p className="update-time">{mcpData.createTime}</p>
             <div className="header-tags">
-              <Tag color={mcpData.type === 'Command' ? 'blue' : 'green'}>
+              <Tag color={mcpData.type === 'SSE' ? 'blue' : mcpData.type === 'StreamableHttp' ? 'green' : 'orange'}>
                 {mcpData.type}
               </Tag>
               {mcpData.tags.map(tag => (

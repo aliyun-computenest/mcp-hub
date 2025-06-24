@@ -143,19 +143,19 @@ const MCPList = () => {
                     size="small" 
                     color={type === mcp.defaultConnection ? 'blue' : 'default'}
                   >
-                    {type}
+                    {type.toUpperCase()}
                   </Tag>
                 ))}
               </div>
               <div className="default-config">
                 <span className="config-label">默认配置:</span>
-                <Tag color="green">{mcp.defaultConnection}</Tag>
+                <Tag color="green">{mcp.defaultConnection.toUpperCase()}</Tag>
               </div>
             </div>
             
             <div className="mcp-meta">
               <Tooltip title="服务类型">
-                <Tag color={mcp.type === 'Command' ? 'blue' : 'green'}>
+                <Tag color={mcp.type === 'SSE' ? 'blue' : mcp.type === 'StreamableHttp' ? 'green' : 'orange'}>
                   {mcp.type}
                 </Tag>
               </Tooltip>
