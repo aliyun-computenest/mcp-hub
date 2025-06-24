@@ -116,13 +116,13 @@ const MCPList = () => {
             onClick={() => navigate(`/detail/${mcp.serverCode}`)}
           >
             <div className="mcp-card-header">
-              <span className="mcp-icon">
-                {typeof mcp.icon === 'string' && mcp.icon.startsWith('http') ? (
-                  <img src={mcp.icon} alt={mcp.name} className="mcp-icon-img" />
-                ) : (
-                  mcp.icon
-                )}
-              </span>
+              {/*<span className="mcp-icon">*/}
+              {/*  {typeof mcp.icon === 'string' && mcp.icon.startsWith('http') ? (*/}
+              {/*    <img src={mcp.icon} alt={mcp.name} className="mcp-icon-img" />*/}
+              {/*  ) : (*/}
+              {/*    mcp.icon*/}
+              {/*  )}*/}
+              {/*</span>*/}
               <div className="mcp-title">
                 <h3>{mcp.name}</h3>
                 {mcp.author && (
