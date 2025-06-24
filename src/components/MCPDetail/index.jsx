@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Button, message, Input, Tag, Spin, Descriptions } from 'antd';
-import { CopyOutlined, LinkOutlined, ArrowLeftOutlined, FileTextOutlined } from '@ant-design/icons';
+import { Card, Button, message, Input, Tag, Spin, Descriptions, Tabs, Space, Switch } from 'antd';
+import { CopyOutlined, LinkOutlined, ArrowLeftOutlined, FileTextOutlined, GlobalOutlined, HomeOutlined } from '@ant-design/icons';
 import mcpService from '../../services/mcpService';
 import './index.css';
 
@@ -10,12 +10,14 @@ const MCPDetail = () => {
   const navigate = useNavigate();
   const [mcpData, setMcpData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeConnectionType, setActiveConnectionType] = useState('');
 
   useEffect(() => {
     const fetchMCPDetail = async () => {
       try {
         const data = await mcpService.getMCPDetail(name);
         setMcpData(data);
+        setActiveConnectionType(data.defaultConnection);
       } catch (error) {
         message.error('获取 MCP 详情失败: ' + error.message);
         console.error('Error fetching MCP detail:', error);
@@ -33,6 +35,15 @@ const MCPDetail = () => {
     }).catch(() => {
       message.error('复制失败');
     });
+  };
+
+  const handleToggleIp = () => {
+    const newIp = mcpService.toggleIpType();
+    const config = mcpService.getCurrentIpConfig();
+    
+    // 重新获取详情以更新配置
+    fetchMCPDetail();
+    message.success(`已切换到${config.usePublicIp ? '公网' : '私网'}IP: ${newIp}`);
   };
 
   if (loading) {
@@ -56,6 +67,68 @@ const MCPDetail = () => {
       </div>
     );
   }
+
+  const connectionTabs = mcpData.connectionTypes.map(type => ({
+    key: type,
+    label: (
+      <span>
+        {type}
+        {type === mcpData.defaultConnection && <Tag size="small" color="blue" style={{marginLeft: 8}}>推荐</Tag>}
+      </span>
+    ),
+    children: (
+      <div className="connection-config">
+        <div className="config-header">
+          <h4>{type.toUpperCase()} 连接配置</h4>
+          <Button 
+            icon={<CopyOutlined />} 
+            onClick={() => copyToClipboard(JSON.stringify(mcpData.connectionConfigs[type], null, 2))}
+          >
+            复制配置
+          </Button>
+        </div>
+        <Input.TextArea 
+          value={JSON.stringify(mcpData.connectionConfigs[type], null, 2)}
+          readOnly 
+          autoSize={{ minRows: 8, maxRows: 15 }}
+          className="config-textarea"
+        />
+        <div className="config-description">
+          <p><strong>连接说明:</strong></p>
+          <ul>
+            {type === 'sse' && (
+              <>
+                <li>Server-Sent Events 连接方式，支持实时数据推送</li>
+                <li>适用于需要实时更新的场景</li>
+                <li>需要配置 Authorization 头部进行身份验证</li>
+              </>
+            )}
+            {type === 'streamableHttp' && (
+              <>
+                <li>流式HTTP连接，支持长连接和数据流传输</li>
+                <li>适用于大数据量传输场景</li>
+                <li>支持断点续传和错误重试</li>
+              </>
+            )}
+            {type === 'openapi' && (
+              <>
+                <li>标准的OpenAPI/REST接口</li>
+                <li>兼容性最好，易于集成</li>
+                <li>支持标准的HTTP方法和状态码</li>
+              </>
+            )}
+            {type === 'command' && (
+              <>
+                <li>本地命令行方式启动</li>
+                <li>适用于开发和测试环境</li>
+                <li>无需网络配置，直接运行</li>
+              </>
+            )}
+          </ul>
+        </div>
+      </div>
+    )
+  }));
 
   return (
     <div className="mcp-detail-container">
@@ -88,6 +161,26 @@ const MCPDetail = () => {
               ))}
             </div>
           </div>
+          <div className="header-controls">
+            <div className="ip-switch">
+              <Space>
+                <span>
+                  <GlobalOutlined /> 公网
+                </span>
+                <Switch 
+                  checked={!mcpData.usePublicIp} 
+                  onChange={handleToggleIp}
+                  size="small"
+                />
+                <span>
+                  <HomeOutlined /> 私网
+                </span>
+              </Space>
+              <div className="current-ip">
+                当前: {mcpData.currentIp}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -100,6 +193,7 @@ const MCPDetail = () => {
                 <Descriptions.Item label="作者">{mcpData.author}</Descriptions.Item>
                 <Descriptions.Item label="服务类型">{mcpData.type}</Descriptions.Item>
                 <Descriptions.Item label="描述">{mcpData.description}</Descriptions.Item>
+                <Descriptions.Item label="默认端口">{mcpData.port}</Descriptions.Item>
                 {mcpData.envsDescription && (
                   <Descriptions.Item label="环境说明">{mcpData.envsDescription}</Descriptions.Item>
                 )}
@@ -140,26 +234,13 @@ const MCPDetail = () => {
           </div>
 
           <div className="overview-right">
-            <Card title="配置示例" className="usage-card">
-              <div className="step-section">
-                <h4>MCP 服务器配置</h4>
-                <div className="code-block">
-                  <Input.TextArea 
-                    value={mcpData.configExample}
-                    readOnly 
-                    autoSize={{ minRows: 8 }}
-                  />
-                  <Button 
-                    icon={<CopyOutlined />} 
-                    onClick={() => copyToClipboard(mcpData.configExample)}
-                  >
-                    复制配置
-                  </Button>
-                </div>
-                <p className="config-tip">
-                  将此配置添加到你的 MCP 客户端配置文件中即可使用该服务器。
-                </p>
-              </div>
+            <Card title="连接配置" className="connection-card">
+              <Tabs
+                items={connectionTabs}
+                activeKey={activeConnectionType}
+                onChange={setActiveConnectionType}
+                size="small"
+              />
             </Card>
           </div>
         </div>

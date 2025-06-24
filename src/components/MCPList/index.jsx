@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Input, Card, message, Tooltip, Tag, Spin } from 'antd';
-import { SearchOutlined, ClockCircleOutlined, UserOutlined } from '@ant-design/icons';
+import { Input, Card, message, Tooltip, Tag, Spin, Button, Space } from 'antd';
+import { SearchOutlined, ClockCircleOutlined, UserOutlined, GlobalOutlined, HomeOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import mcpService from '../../services/mcpService';
 import './index.css';
@@ -11,6 +11,7 @@ const MCPList = () => {
   const [mcpList, setMcpList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
+  const [ipConfig, setIpConfig] = useState(null);
   const navigate = useNavigate();
 
   const fetchMCPList = async () => {
@@ -20,12 +21,26 @@ const MCPList = () => {
       const data = await mcpService.getMCPList();
       console.log('MCPList: 获取到数据:', data);
       setMcpList(data);
+      
+      // 获取IP配置
+      const config = mcpService.getCurrentIpConfig();
+      setIpConfig(config);
     } catch (error) {
       console.error('MCPList: 获取数据失败:', error);
       message.error('获取 MCP 列表失败: ' + error.message);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleToggleIp = () => {
+    const newIp = mcpService.toggleIpType();
+    const config = mcpService.getCurrentIpConfig();
+    setIpConfig(config);
+    message.success(`已切换到${config.usePublicIp ? '公网' : '私网'}IP: ${newIp}`);
+    
+    // 重新获取数据以更新配置
+    fetchMCPList();
   };
 
   useEffect(() => {
@@ -62,8 +77,26 @@ const MCPList = () => {
         />
       </div>
 
-      <div className="mcp-stats">
-        最新 MCP Servers: {mcpList.length} {filteredMCPs.length !== mcpList.length && `(筛选结果: ${filteredMCPs.length})`}
+      <div className="control-bar">
+        <div className="mcp-stats">
+          最新 MCP Servers: {mcpList.length} {filteredMCPs.length !== mcpList.length && `(筛选结果: ${filteredMCPs.length})`}
+        </div>
+        
+        {ipConfig && (
+          <div className="ip-control">
+            <Space>
+              <span className="ip-info">
+                当前使用: <Tag color={ipConfig.usePublicIp ? 'blue' : 'green'}>
+                  {ipConfig.usePublicIp ? <GlobalOutlined /> : <HomeOutlined />}
+                  {ipConfig.usePublicIp ? '公网' : '私网'} {ipConfig.currentIp}
+                </Tag>
+              </span>
+              <Button size="small" onClick={handleToggleIp}>
+                切换到{ipConfig.usePublicIp ? '私网' : '公网'}
+              </Button>
+            </Space>
+          </div>
+        )}
       </div>
 
       <div className="mcp-cards">
@@ -100,6 +133,25 @@ const MCPList = () => {
                 {mcp.tags.length > 3 && <Tag size="small">+{mcp.tags.length - 3}</Tag>}
               </div>
             )}
+            
+            <div className="mcp-connection-info">
+              <div className="connection-types">
+                <span className="connection-label">支持连接:</span>
+                {mcp.connectionTypes.map(type => (
+                  <Tag 
+                    key={type} 
+                    size="small" 
+                    color={type === mcp.defaultConnection ? 'blue' : 'default'}
+                  >
+                    {type}
+                  </Tag>
+                ))}
+              </div>
+              <div className="default-config">
+                <span className="config-label">默认配置:</span>
+                <Tag color="green">{mcp.defaultConnection}</Tag>
+              </div>
+            </div>
             
             <div className="mcp-meta">
               <Tooltip title="服务类型">

@@ -29,11 +29,11 @@
 .header-main {
   display: flex;
   align-items: flex-start;
+  gap: 24px;
 }
 
 .header-icon {
   font-size: 48px;
-  margin-right: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -69,6 +69,29 @@
   gap: 8px;
 }
 
+.header-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.ip-switch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.current-ip {
+  color: #666;
+  font-size: 11px;
+}
+
 .detail-content {
   background: white;
   padding: 24px;
@@ -89,12 +112,65 @@
 }
 
 .overview-right {
-  width: 400px;
+  width: 500px;
   flex-shrink: 0;
 }
 
-.info-card, .usage-card, .source-card, .env-card {
+.info-card, .source-card, .env-card, .connection-card {
   width: 100%;
+}
+
+.connection-card .ant-card-body {
+  padding: 16px;
+}
+
+.connection-config {
+  margin-top: 16px;
+}
+
+.config-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.config-header h4 {
+  margin: 0;
+  color: #1f1f1f;
+  font-size: 14px;
+}
+
+.config-textarea {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 12px;
+  background: #f8f9fa;
+  border: 1px solid #e8e8e8;
+  margin-bottom: 16px;
+}
+
+.config-description {
+  padding: 12px;
+  background: #f0f7ff;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.config-description p {
+  margin: 0 0 8px 0;
+  font-weight: 500;
+  color: #1f1f1f;
+}
+
+.config-description ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.config-description li {
+  margin-bottom: 4px;
+  color: #666;
 }
 
 .link-item {
@@ -117,39 +193,6 @@
   text-decoration: underline;
 }
 
-.step-section {
-  margin-bottom: 24px;
-}
-
-.step-section h4 {
-  margin-bottom: 16px;
-  color: #1f1f1f;
-  font-size: 14px;
-}
-
-.code-block {
-  position: relative;
-  margin-bottom: 16px;
-}
-
-.code-block .ant-input-textarea {
-  font-family: monospace;
-  background: #f5f5f5;
-}
-
-.code-block .ant-btn {
-  position: absolute;
-  right: 8px;
-  top: 8px;
-}
-
-.config-tip {
-  margin-top: 12px;
-  font-size: 12px;
-  color: #666;
-  line-height: 1.4;
-}
-
 @media (max-width: 768px) {
   .mcp-detail-container {
     padding: 16px;
@@ -157,11 +200,12 @@
 
   .header-main {
     flex-direction: column;
+    gap: 16px;
   }
 
-  .header-icon {
-    margin-right: 0;
-    margin-bottom: 16px;
+  .header-controls {
+    align-items: flex-start;
+    width: 100%;
   }
 
   .overview-section {
