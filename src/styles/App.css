@@ -1,0 +1,77 @@
+.layout {
+  min-height: 100vh;
+  background: #f5f7fa;
+}
+
+.header {
+  background: #fff;
+  padding: 0 50px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  height: 64px;
+}
+
+.logo-icon {
+  font-size: 24px;
+  font-weight: bold;
+  margin-right: 8px;
+  color: #1890ff;
+}
+
+.logo-text {
+  font-size: 18px;
+  font-weight: 500;
+  color: #000;
+}
+
+.content {
+  padding: 88px 50px 24px;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.page-header h1 {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #1f1f1f;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #666;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.search-container {
+  max-width: 800px;
+  margin: 0 auto 32px;
+}
+
+.mcp-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+@media (max-width: 768px) {
+  .content {
+    padding: 88px 16px 24px;
+  }
+  
+  .header {
+    padding: 0 16px;
+  }
+}

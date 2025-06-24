@@ -1,0 +1,115 @@
+.mcp-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.search-container {
+  max-width: 800px;
+  margin: 0 auto 32px;
+}
+
+.mcp-stats {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 24px;
+}
+
+.mcp-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.mcp-card {
+  cursor: pointer;
+  transition: all 0.3s;
+  height: 100%;
+}
+
+.mcp-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.mcp-card-header {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.mcp-icon {
+  font-size: 24px;
+  margin-right: 12px;
+  line-height: 1;
+}
+
+.mcp-title {
+  flex: 1;
+}
+
+.mcp-title h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.mcp-description {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.mcp-meta {
+  display: flex;
+  justify-content: flex-end;
+  color: #999;
+  font-size: 12px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.detail-modal .ant-modal-content {
+  border-radius: 8px;
+}
+
+.mcp-detail .detail-header {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.detail-icon {
+  font-size: 32px;
+  margin-right: 16px;
+}
+
+.detail-title h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.detail-content h3 {
+  margin: 24px 0 16px;
+  font-size: 16px;
+  color: #1890ff;
+}
+
+.detail-content p {
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .mcp-cards {
+    grid-template-columns: 1fr;
+  }
+}
