@@ -176,6 +176,7 @@ class MCPService {
         ...detail,
         connectionConfigs,
         currentIp: SERVER_CONFIG.getCurrentIp(),
+        currentToken: SERVER_CONFIG.getCurrentToken(),
         publicIp: SERVER_CONFIG.publicIp,
         privateIp: SERVER_CONFIG.privateIp
       };
@@ -195,6 +196,7 @@ class MCPService {
   getCurrentIpConfig() {
     return {
       currentIp: SERVER_CONFIG.getCurrentIp(),
+      currentToken: SERVER_CONFIG.getCurrentToken(),
       publicIp: SERVER_CONFIG.publicIp,
       privateIp: SERVER_CONFIG.privateIp,
       usePublicIp: SERVER_CONFIG.usePublicIp

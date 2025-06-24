@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Button, message, Input, Tag, Spin, Descriptions, Tabs, Space, Switch } from 'antd';
-import { CopyOutlined, LinkOutlined, ArrowLeftOutlined, FileTextOutlined, GlobalOutlined, HomeOutlined } from '@ant-design/icons';
+import { Card, Button, message, Input, Tag, Spin, Descriptions, Tabs, Space, Switch, Alert } from 'antd';
+import { CopyOutlined, LinkOutlined, ArrowLeftOutlined, FileTextOutlined, GlobalOutlined, HomeOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import mcpService from '../../services/mcpService';
 import './index.css';
 
@@ -12,24 +12,24 @@ const MCPDetail = () => {
   const [loading, setLoading] = useState(true);
   const [activeConnectionType, setActiveConnectionType] = useState('');
 
-  useEffect(() => {
-    const fetchMCPDetail = async () => {
-      try {
-        const data = await mcpService.getMCPDetail(name);
-        setMcpData(data);
-        setActiveConnectionType(data.defaultConnection);
-      } catch (error) {
-        console.error('Error fetching MCP detail:', error);
-        if (error.message.includes('不存在')) {
-          message.error(`MCP 服务器 "${name}" 不存在或配置不完整`);
-        } else {
-          message.warning('获取 MCP 详情失败，显示的可能是默认配置');
-        }
-      } finally {
-        setLoading(false);
+  const fetchMCPDetail = async () => {
+    try {
+      const data = await mcpService.getMCPDetail(name);
+      setMcpData(data);
+      setActiveConnectionType(data.defaultConnection);
+    } catch (error) {
+      console.error('Error fetching MCP detail:', error);
+      if (error.message.includes('不存在')) {
+        message.error(`MCP 服务器 "${name}" 不存在或配置不完整`);
+      } else {
+        message.warning('获取 MCP 详情失败，显示的可能是默认配置');
       }
-    };
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchMCPDetail();
   }, [name]);
 
@@ -77,6 +77,9 @@ const MCPDetail = () => {
     );
   }
 
+  // 检查是否有有效的Token
+  const hasValidToken = mcpData.currentToken && mcpData.currentToken.trim() !== '';
+
   const connectionTabs = mcpData.connectionTypes.map(type => ({
     key: type,
     label: (
@@ -96,6 +99,18 @@ const MCPDetail = () => {
             复制配置
           </Button>
         </div>
+        
+        {!hasValidToken && (
+          <Alert
+            message="Token 未配置"
+            description="当前未配置有效的 API Token，连接配置中将不包含认证信息。请联系管理员配置 Token。"
+            type="warning"
+            icon={<ExclamationCircleOutlined />}
+            style={{ marginBottom: 16 }}
+            showIcon
+          />
+        )}
+        
         <Input.TextArea 
           value={JSON.stringify(mcpData.connectionConfigs[type], null, 2)}
           readOnly 
@@ -109,7 +124,8 @@ const MCPDetail = () => {
               <>
                 <li>Server-Sent Events 连接方式，支持实时数据推送</li>
                 <li>适用于需要实时更新的场景</li>
-                <li>需要配置 Authorization 头部进行身份验证</li>
+                {hasValidToken && <li>需要配置 Authorization 头部进行身份验证</li>}
+                {!hasValidToken && <li style={{color: '#faad14'}}>⚠️ 当前未配置认证信息，可能需要手动添加</li>}
               </>
             )}
             {type === 'streamableHttp' && (
@@ -117,6 +133,8 @@ const MCPDetail = () => {
                 <li>流式HTTP连接，支持长连接和数据流传输</li>
                 <li>适用于大数据量传输场景</li>
                 <li>支持断点续传和错误重试</li>
+                {hasValidToken && <li>使用 Authorization 头部进行身份验证</li>}
+                {!hasValidToken && <li style={{color: '#faad14'}}>⚠️ 当前未配置认证信息，可能需要手动添加</li>}
               </>
             )}
             {type === 'openapi' && (
@@ -124,7 +142,8 @@ const MCPDetail = () => {
                 <li>标准的OpenAPI/REST接口</li>
                 <li>兼容性最好，易于集成</li>
                 <li>支持标准的HTTP方法和状态码</li>
-                <li>使用 URL 和 API Key 进行访问</li>
+                {hasValidToken && <li>使用 API Key 进行访问认证</li>}
+                {!hasValidToken && <li style={{color: '#faad14'}}>⚠️ 当前未配置 API Key，可能需要手动添加</li>}
               </>
             )}
           </ul>
@@ -156,9 +175,6 @@ const MCPDetail = () => {
             <h1>{mcpData.name}</h1>
             <p className="update-time">{mcpData.createTime}</p>
             <div className="header-tags">
-              <Tag color={mcpData.type === 'SSE' ? 'blue' : mcpData.type === 'StreamableHttp' ? 'green' : 'orange'}>
-                {mcpData.type}
-              </Tag>
               {mcpData.tags.map(tag => (
                 <Tag key={tag}>{tag}</Tag>
               ))}
@@ -182,6 +198,11 @@ const MCPDetail = () => {
               <div className="current-ip">
                 当前: {mcpData.currentIp}
               </div>
+              {!hasValidToken && (
+                <div className="token-warning">
+                  <ExclamationCircleOutlined style={{color: '#faad14'}} /> Token未配置
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -194,7 +215,6 @@ const MCPDetail = () => {
               <Descriptions column={1} size="small">
                 <Descriptions.Item label="服务名称">{mcpData.name}</Descriptions.Item>
                 <Descriptions.Item label="作者">{mcpData.author}</Descriptions.Item>
-                <Descriptions.Item label="服务类型">{mcpData.type}</Descriptions.Item>
                 <Descriptions.Item label="描述">{mcpData.description}</Descriptions.Item>
                 <Descriptions.Item label="默认端口">{mcpData.port}</Descriptions.Item>
                 {mcpData.envsDescription && (

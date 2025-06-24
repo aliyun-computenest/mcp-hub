@@ -26,9 +26,16 @@ export const SERVER_CONFIG = {
     this.usePublicIp = !this.usePublicIp;
   },
   
+  // 检查Token是否有效
+  hasValidToken() {
+    const token = this.getCurrentToken();
+    return token && token.trim() !== '';
+  },
+  
   // 生成不同类型的连接配置
   generateConfig(serverCode, type, port = 8080, path = '') {
     const token = this.getCurrentToken();
+    const hasToken = this.hasValidToken();
     let baseUrl;
     
     // OpenAPI 使用 8000 端口，其他使用指定端口
@@ -42,36 +49,51 @@ export const SERVER_CONFIG = {
     
     switch (type) {
       case 'sse':
-        return {
+        const sseConfig = {
           mcpServers: {
             [serverCode]: {
               type: 'sse',
-              url: `${baseUrl}${serverPath}/sse`,
-              headers: {
-                Authorization: `Bearer ${token}`
-              }
+              url: `${baseUrl}${serverPath}/sse`
             }
           }
         };
         
+        if (hasToken) {
+          sseConfig.mcpServers[serverCode].headers = {
+            Authorization: `Bearer ${token}`
+          };
+        }
+        
+        return sseConfig;
+        
       case 'streamableHttp':
-        return {
+        const httpConfig = {
           mcpServers: {
             [serverCode]: {
               type: 'streamableHttp',
-              url: `${baseUrl}${serverPath}`,
-              headers: {
-                Authorization: `Bearer ${token}`
-              }
+              url: `${baseUrl}${serverPath}`
             }
           }
         };
         
+        if (hasToken) {
+          httpConfig.mcpServers[serverCode].headers = {
+            Authorization: `Bearer ${token}`
+          };
+        }
+        
+        return httpConfig;
+        
       case 'openapi':
-        return {
-          url: `${baseUrl}${serverPath}`,
-          apikey: token
+        const openApiConfig = {
+          url: `${baseUrl}${serverPath}`
         };
+        
+        if (hasToken) {
+          openApiConfig.apikey = token;
+        }
+        
+        return openApiConfig;
         
       default:
         return {};
