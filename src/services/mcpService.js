@@ -46,10 +46,15 @@ class MCPService {
   // 获取MCP列表
   async getMCPList() {
     try {
+      console.log('开始获取MCP列表...');
+      
       const [config, details] = await Promise.all([
         this.fetchConfig(),
         this.fetchConfigDetail()
       ]);
+
+      console.log('配置文件:', config);
+      console.log('详细信息:', details);
 
       const language = this.getCurrentLanguage();
       const mcpServers = config.mcpServers || {};
@@ -73,12 +78,13 @@ class MCPService {
           tags: detail.Tags || [],
           type: detail.Type || 'Command',
           readmeUrl: detail.ReadMeUrl || '',
-          createTime: '最近更新', // 可以根据需要添加时间戳
+          createTime: '最近更新',
           config: serverConfig,
           detail: detail
         };
       }).filter(Boolean);
 
+      console.log('处理后的MCP列表:', mcpList);
       return mcpList;
     } catch (error) {
       console.error('Error getting MCP list:', error);
@@ -136,8 +142,8 @@ class MCPService {
         createTime: '最近更新',
         configExample,
         envSchema: detail.EnvSchema || {},
-        envsDescription: detail.EnvsDescription[language] || detail.EnvsDescription.en || '',
-        entityDoc: detail.EntityDoc[language] || detail.EntityDoc.en || '',
+        envsDescription: detail.EnvsDescription?.[language] || detail.EnvsDescription?.en || '',
+        entityDoc: detail.EntityDoc?.[language] || detail.EntityDoc?.en || '',
         config: serverConfig,
         detail: detail
       };

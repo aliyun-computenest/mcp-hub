@@ -16,11 +16,13 @@ const MCPList = () => {
   const fetchMCPList = async () => {
     try {
       setLoading(true);
+      console.log('MCPList: 开始获取数据...');
       const data = await mcpService.getMCPList();
+      console.log('MCPList: 获取到数据:', data);
       setMcpList(data);
     } catch (error) {
+      console.error('MCPList: 获取数据失败:', error);
       message.error('获取 MCP 列表失败: ' + error.message);
-      console.error('Error fetching MCP list:', error);
     } finally {
       setLoading(false);
     }
