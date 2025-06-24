@@ -2,9 +2,11 @@
 export const SERVER_CONFIG = {
   // 公网IP配置
   publicIp: '47.84.65.28',
+  publicToken: 'K97iOtPxGe',
   
   // 私网IP配置  
   privateIp: '192.168.1.100',
+  privateToken: 'K97iOtPxGe',
   
   // 默认使用公网IP
   usePublicIp: true,
@@ -12,6 +14,11 @@ export const SERVER_CONFIG = {
   // 获取当前使用的IP
   getCurrentIp() {
     return this.usePublicIp ? this.publicIp : this.privateIp;
+  },
+  
+  // 获取当前使用的Token
+  getCurrentToken() {
+    return this.usePublicIp ? this.publicToken : this.privateToken;
   },
   
   // 切换IP类型
@@ -23,6 +30,7 @@ export const SERVER_CONFIG = {
   generateConfig(serverCode, type, port = 8080, path = '') {
     const baseUrl = `http://${this.getCurrentIp()}:${port}`;
     const serverPath = path || `/${serverCode}`;
+    const token = this.getCurrentToken();
     
     switch (type) {
       case 'sse':
@@ -32,7 +40,7 @@ export const SERVER_CONFIG = {
               type: 'sse',
               url: `${baseUrl}${serverPath}/sse`,
               headers: {
-                Authorization: 'Bearer K97iOtPxGe'
+                Authorization: `Bearer ${token}`
               }
             }
           }
@@ -45,7 +53,7 @@ export const SERVER_CONFIG = {
               type: 'streamableHttp',
               url: `${baseUrl}${serverPath}`,
               headers: {
-                Authorization: 'Bearer K97iOtPxGe'
+                Authorization: `Bearer ${token}`
               }
             }
           }
@@ -53,25 +61,12 @@ export const SERVER_CONFIG = {
         
       case 'openapi':
         return {
-          mcpServers: {
-            [serverCode]: {
-              type: 'openapi',
-              url: `${baseUrl}${serverPath}`
-            }
-          }
+          url: `${baseUrl}${serverPath}`,
+          apikey: token
         };
         
-      case 'command':
       default:
-        return {
-          mcpServers: {
-            [serverCode]: {
-              command: 'npx',
-              args: ['-y', serverCode],
-              env: {}
-            }
-          }
-        };
+        return {};
     }
   }
 };
