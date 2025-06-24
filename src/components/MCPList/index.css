@@ -3,6 +3,20 @@
   margin: 0 auto;
 }
 
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 0;
+  color: #666;
+}
+
+.loading-container p {
+  margin-top: 16px;
+  font-size: 14px;
+}
+
 .search-container {
   max-width: 800px;
   margin: 0 auto 32px;
@@ -16,7 +30,7 @@
 
 .mcp-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 24px;
 }
 
@@ -41,6 +55,17 @@
   font-size: 24px;
   margin-right: 12px;
   line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+}
+
+.mcp-icon-img {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  object-fit: cover;
 }
 
 .mcp-title {
@@ -48,9 +73,17 @@
 }
 
 .mcp-title h3 {
-  margin: 0;
+  margin: 0 0 4px 0;
   font-size: 16px;
   font-weight: 500;
+}
+
+.mcp-author {
+  font-size: 12px;
+  color: #999;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .mcp-description {
@@ -64,9 +97,17 @@
   overflow: hidden;
 }
 
+.mcp-tags {
+  margin-bottom: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
 .mcp-meta {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   color: #999;
   font-size: 12px;
 }
@@ -75,6 +116,16 @@
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80px 0;
+  color: #999;
+}
+
+.empty-state p {
+  font-size: 16px;
 }
 
 .detail-modal .ant-modal-content {

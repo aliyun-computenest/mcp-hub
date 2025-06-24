@@ -1,0 +1,116 @@
+[
+  {
+    "ServerCode": "howtocook-mcp",
+    "Author": "@worryzyy",
+    "ServiceName": {
+      "zh-cn": "今天吃什么",
+      "en": "howtocook-mcp"
+    },
+    "Tags": [
+      "ArtAndCulture"
+    ],
+    "Description": {
+      "zh-cn": "让 AI 助手变身私人大厨，为你的一日三餐出谋划策！",
+      "en": "Turn your AI assistant into a personal chef that helps plan your daily meals!"
+    },
+    "EnvsDescription": {
+      "zh-cn": "",
+      "en": ""
+    },
+    "Icon": "https://resources.modelscope.cn/studio-cover-pre/studio-cover_07affeaa-4d37-4e6d-bad8-47b5f57f0ce4.png",
+    "ReadMeUrl": "https://github.com/worryzyy/HowToCook-mcp",
+    "Type": "Command",
+    "Content": {
+      "command": "npx",
+      "args": ["-y", "howtocook-mcp"],
+      "env": {}
+    },
+    "EnvSchema": {},
+    "EntityDoc": {
+      "en": "https://computenest-service-deploy-document-cn-hangzhou.oss-cn-hangzhou.aliyuncs.com/mcp/howtocook-mcp/doc/en-us/index.md",
+      "zh-cn": "https://computenest-service-deploy-document-cn-hangzhou.oss-cn-hangzhou.aliyuncs.com/mcp/howtocook-mcp/doc/zh-cn/index.md"
+    }
+  },
+  {
+    "ServerCode": "snowflake-mcp",
+    "Author": "@snowflake",
+    "ServiceName": {
+      "zh-cn": "雪花数据库",
+      "en": "SnowFlake"
+    },
+    "Tags": [
+      "Database",
+      "Analytics"
+    ],
+    "Description": {
+      "zh-cn": "该 MCP 服务器使大型语言模型（LLMs）能够与 SnowFlake 数据库进行交互，实现安全、可控的数据操作。",
+      "en": "This MCP server enables large language models (LLMs) to interact with SnowFlake databases for secure and controlled data operations."
+    },
+    "EnvsDescription": {
+      "zh-cn": "需要配置 SnowFlake 连接信息",
+      "en": "Requires SnowFlake connection configuration"
+    },
+    "Icon": "❄️",
+    "ReadMeUrl": "https://github.com/snowflake/snowflake-mcp",
+    "Type": "Command",
+    "Content": {
+      "command": "npx",
+      "args": ["-y", "snowflake-mcp"],
+      "env": {
+        "SNOWFLAKE_ACCOUNT": "",
+        "SNOWFLAKE_USERNAME": "",
+        "SNOWFLAKE_PASSWORD": ""
+      }
+    },
+    "EnvSchema": {
+      "SNOWFLAKE_ACCOUNT": {
+        "type": "string",
+        "description": "SnowFlake账户名"
+      },
+      "SNOWFLAKE_USERNAME": {
+        "type": "string", 
+        "description": "用户名"
+      },
+      "SNOWFLAKE_PASSWORD": {
+        "type": "string",
+        "description": "密码"
+      }
+    },
+    "EntityDoc": {
+      "en": "https://docs.snowflake.com/mcp",
+      "zh-cn": "https://docs.snowflake.com/mcp/zh"
+    }
+  },
+  {
+    "ServerCode": "langflow-doc-qa-server",
+    "Author": "@langflow",
+    "ServiceName": {
+      "zh-cn": "文档问答服务器",
+      "en": "langflow-doc-qa-server"
+    },
+    "Tags": [
+      "Documentation",
+      "QA"
+    ],
+    "Description": {
+      "zh-cn": "一个基于 Langflow 的文档问答模型上下文协议（MCP）服务器，它通过提供一个简单的接口以通过 Langflow 流程查询文档，从而弥补了你的 MCP 服务。",
+      "en": "A Langflow-based document Q&A Model Context Protocol (MCP) server that bridges your MCP services by providing a simple interface to query documents through Langflow flows."
+    },
+    "EnvsDescription": {
+      "zh-cn": "需要配置 Langflow API 密钥",
+      "en": "Requires Langflow API key configuration"
+    },
+    "Icon": "📚",
+    "ReadMeUrl": "https://github.com/langflow/langflow-doc-qa-server",
+    "Type": "SSE",
+    "Content": {
+      "url": "https://example.com/sse",
+      "env": {}
+    },
+    "EnvSchema": {},
+    "EntityDoc": {
+      "en": "https://docs.langflow.org/mcp",
+      "zh-cn": "https://docs.langflow.org/mcp/zh"
+    }
+  }
+]

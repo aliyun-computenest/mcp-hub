@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "howtocook-mcp": {
+      "url": null,
+      "command": "npx",
+      "args": ["-y", "howtocook-mcp"],
+      "type": null,
+      "env": {}
+    },
+    "snowflake-mcp": {
+      "url": null,
+      "command": "npx",
+      "args": ["-y", "snowflake-mcp"],
+      "type": null,
+      "env": {}
+    },
+    "langflow-doc-qa-server": {
+      "url": "https://example.com/sse",
+      "command": null,
+      "args": [],
+      "type": "sse",
+      "env": {}
+    }
+  }
+}

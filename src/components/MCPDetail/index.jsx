@@ -1,38 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { Card, Button, message, Input } from 'antd';
-import { CopyOutlined, LinkOutlined } from '@ant-design/icons';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Card, Button, message, Input, Tag, Spin, Descriptions } from 'antd';
+import { CopyOutlined, LinkOutlined, ArrowLeftOutlined, FileTextOutlined } from '@ant-design/icons';
+import mcpService from '../../services/mcpService';
 import './index.css';
 
 const MCPDetail = () => {
   const { name } = useParams();
+  const navigate = useNavigate();
   const [mcpData, setMcpData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchMCPDetail = async () => {
       try {
-        // 模拟API调用
-        const mockData = {
-          name: 'Context7',
-          createTime: '2025.04.29 更新',
-          description: 'Context7 是接从源码中提取真实可用的代码示例、特定版本的文档和示例。',
-          icon: '📚',
-          sourceUrl: 'https://github.com/upstash/context7',
-          features: [
-            '获取最新、版本特定的文档',
-            '从源码中提取真实可用的代码示例',
-            '提供简洁、相关的信息，无冗余内容',
-            '支持个人免费使用',
-            '与MCP服务器和工具集成'
-          ],
-          sseUrl: 'https://mcp.higrass.ai/mcp-context7/cmcBokvzeN03mOv01lab331vm/sse'
-        };
-
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setMcpData(mockData);
+        const data = await mcpService.getMCPDetail(name);
+        setMcpData(data);
       } catch (error) {
-        message.error('获取 MCP 详情失败');
+        message.error('获取 MCP 详情失败: ' + error.message);
         console.error('Error fetching MCP detail:', error);
       } finally {
         setLoading(false);
@@ -50,63 +35,130 @@ const MCPDetail = () => {
     });
   };
 
-  if (loading || !mcpData) {
-    return <div className="loading">加载中...</div>;
+  if (loading) {
+    return (
+      <div className="mcp-detail-container">
+        <div className="loading-container">
+          <Spin size="large" />
+          <p>正在加载 MCP 服务器详情...</p>
+        </div>
+      </div>
+    );
   }
 
-  const configExample = `{
-  "mcpServers": {
-    "mcp-context7": {
-      "url": "${mcpData.sseUrl}"
-    }
+  if (!mcpData) {
+    return (
+      <div className="mcp-detail-container">
+        <div className="error-container">
+          <p>未找到该 MCP 服务器</p>
+          <Button onClick={() => navigate('/')}>返回首页</Button>
+        </div>
+      </div>
+    );
   }
-}`;
 
   return (
     <div className="mcp-detail-container">
       <div className="detail-header">
-        <div className="header-icon">{mcpData.icon}</div>
-        <div className="header-content">
-          <h1>{mcpData.name} MCP Server</h1>
-          <p className="update-time">{mcpData.createTime}</p>
+        <Button 
+          icon={<ArrowLeftOutlined />} 
+          onClick={() => navigate('/')}
+          className="back-button"
+        >
+          返回列表
+        </Button>
+        
+        <div className="header-main">
+          <div className="header-icon">
+            {typeof mcpData.icon === 'string' && mcpData.icon.startsWith('http') ? (
+              <img src={mcpData.icon} alt={mcpData.name} className="header-icon-img" />
+            ) : (
+              mcpData.icon
+            )}
+          </div>
+          <div className="header-content">
+            <h1>{mcpData.name}</h1>
+            <p className="update-time">{mcpData.createTime}</p>
+            <div className="header-tags">
+              <Tag color={mcpData.type === 'Command' ? 'blue' : 'green'}>
+                {mcpData.type}
+              </Tag>
+              {mcpData.tags.map(tag => (
+                <Tag key={tag}>{tag}</Tag>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
       <div className="detail-content">
         <div className="overview-section">
           <div className="overview-left">
-            <Card title="功能" className="feature-card">
-              <ul className="feature-list">
-                {mcpData.features.map((feature, index) => (
-                  <li key={index}>{feature}</li>
-                ))}
-              </ul>
+            <Card title="基本信息" className="info-card">
+              <Descriptions column={1} size="small">
+                <Descriptions.Item label="服务名称">{mcpData.name}</Descriptions.Item>
+                <Descriptions.Item label="作者">{mcpData.author}</Descriptions.Item>
+                <Descriptions.Item label="服务类型">{mcpData.type}</Descriptions.Item>
+                <Descriptions.Item label="描述">{mcpData.description}</Descriptions.Item>
+                {mcpData.envsDescription && (
+                  <Descriptions.Item label="环境说明">{mcpData.envsDescription}</Descriptions.Item>
+                )}
+              </Descriptions>
             </Card>
             
-            <Card title="源码地址" className="source-card">
-              <a href={mcpData.sourceUrl} target="_blank" rel="noopener noreferrer" className="source-link">
-                <LinkOutlined /> {mcpData.sourceUrl}
-              </a>
+            <Card title="相关链接" className="source-card">
+              {mcpData.readmeUrl && (
+                <div className="link-item">
+                  <a href={mcpData.readmeUrl} target="_blank" rel="noopener noreferrer" className="source-link">
+                    <LinkOutlined /> 源码地址
+                  </a>
+                </div>
+              )}
+              {mcpData.entityDoc && (
+                <div className="link-item">
+                  <a href={mcpData.entityDoc} target="_blank" rel="noopener noreferrer" className="source-link">
+                    <FileTextOutlined /> 文档地址
+                  </a>
+                </div>
+              )}
             </Card>
+
+            {Object.keys(mcpData.envSchema).length > 0 && (
+              <Card title="环境变量配置" className="env-card">
+                <Descriptions column={1} size="small">
+                  {Object.entries(mcpData.envSchema).map(([key, schema]) => (
+                    <Descriptions.Item key={key} label={key}>
+                      <div>
+                        <Tag>{schema.type}</Tag>
+                        <span>{schema.description}</span>
+                      </div>
+                    </Descriptions.Item>
+                  ))}
+                </Descriptions>
+              </Card>
+            )}
           </div>
 
           <div className="overview-right">
-            <Card title="使用 URL 连接 MCP Server" className="usage-card">
+            <Card title="配置示例" className="usage-card">
               <div className="step-section">
-                <h4>通过 SSE 访问 URL</h4>
+                <h4>MCP 服务器配置</h4>
                 <div className="code-block">
                   <Input.TextArea 
-                    value={configExample}
+                    value={mcpData.configExample}
                     readOnly 
                     autoSize={{ minRows: 8 }}
                   />
                   <Button 
                     icon={<CopyOutlined />} 
-                    onClick={() => copyToClipboard(configExample)}
+                    onClick={() => copyToClipboard(mcpData.configExample)}
                   >
-                    复制
+                    复制配置
                   </Button>
                 </div>
+                <p className="config-tip">
+                  将此配置添加到你的 MCP 客户端配置文件中即可使用该服务器。
+                </p>
               </div>
             </Card>
           </div>

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Input, Card, message, Tooltip } from 'antd';
-import { SearchOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import { Input, Card, message, Tooltip, Tag, Spin } from 'antd';
+import { SearchOutlined, ClockCircleOutlined, UserOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import mcpService from '../../services/mcpService';
 import './index.css';
 
 const { Search } = Input;
@@ -15,47 +16,10 @@ const MCPList = () => {
   const fetchMCPList = async () => {
     try {
       setLoading(true);
-      const mockData = [
-        {
-          name: 'SnowFlake',
-          createTime: '2025.06.06 更新',
-          description: '该 MCP 服务器使大型语言模型（LLMs）能够与 SnowFlake 数据库进行交互，实现安全、可控的数据操作。',
-          icon: '❄️',
-          tools: [
-            {
-              name: "DeepChat",
-              icon: "https://example.com/deepchat.png",
-              installable: true,
-              officialLink: "https://example.com/deepchat"
-            },
-            {
-              name: "Cherry Studio",
-              icon: "https://example.com/cherry.png",
-              installable: true,
-              officialLink: "https://example.com/cherry"
-            }
-          ]
-        },
-        {
-          name: 'langflow-doc-qa-server',
-          createTime: '2025.06.06 更新',
-          description: '一个基于 Langflow 的文档问答模型上下文协议（MCP）服务器，它通过提供一个简单的接口以通过 Langflow 流程查询文档，从而弥补了你的 MCP 服务。',
-          icon: '📚',
-          tools: [
-            {
-              name: "LobeChat",
-              icon: "https://example.com/lobe.png",
-              installable: false,
-              officialLink: "https://example.com/lobe"
-            }
-          ]
-        }
-      ];
-      
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setMcpList(mockData);
+      const data = await mcpService.getMCPList();
+      setMcpList(data);
     } catch (error) {
-      message.error('获取 MCP 列表失败');
+      message.error('获取 MCP 列表失败: ' + error.message);
       console.error('Error fetching MCP list:', error);
     } finally {
       setLoading(false);
@@ -68,14 +32,27 @@ const MCPList = () => {
 
   const filteredMCPs = mcpList.filter(mcp => 
     mcp.name.toLowerCase().includes(searchText.toLowerCase()) ||
-    mcp.description.toLowerCase().includes(searchText.toLowerCase())
+    mcp.description.toLowerCase().includes(searchText.toLowerCase()) ||
+    mcp.author.toLowerCase().includes(searchText.toLowerCase()) ||
+    mcp.tags.some(tag => tag.toLowerCase().includes(searchText.toLowerCase()))
   );
+
+  if (loading) {
+    return (
+      <div className="mcp-container">
+        <div className="loading-container">
+          <Spin size="large" />
+          <p>正在加载 MCP 服务器列表...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mcp-container">
       <div className="search-container">
         <Search
-          placeholder="请输入内容"
+          placeholder="搜索 MCP 服务器（支持名称、描述、作者、标签）"
           allowClear
           enterButton={<SearchOutlined />}
           size="large"
@@ -84,24 +61,50 @@ const MCPList = () => {
       </div>
 
       <div className="mcp-stats">
-        最新 MCP Servers: {mcpList.length}
+        最新 MCP Servers: {mcpList.length} {filteredMCPs.length !== mcpList.length && `(筛选结果: ${filteredMCPs.length})`}
       </div>
 
       <div className="mcp-cards">
         {filteredMCPs.map(mcp => (
           <Card
-            key={mcp.name}
+            key={mcp.serverCode}
             className="mcp-card"
-            onClick={() => navigate(`/detail/${mcp.name}`)}
+            onClick={() => navigate(`/detail/${mcp.serverCode}`)}
           >
             <div className="mcp-card-header">
-              <span className="mcp-icon">{mcp.icon}</span>
+              <span className="mcp-icon">
+                {typeof mcp.icon === 'string' && mcp.icon.startsWith('http') ? (
+                  <img src={mcp.icon} alt={mcp.name} className="mcp-icon-img" />
+                ) : (
+                  mcp.icon
+                )}
+              </span>
               <div className="mcp-title">
                 <h3>{mcp.name}</h3>
+                {mcp.author && (
+                  <div className="mcp-author">
+                    <UserOutlined /> {mcp.author}
+                  </div>
+                )}
               </div>
             </div>
             <p className="mcp-description">{mcp.description}</p>
+            
+            {mcp.tags && mcp.tags.length > 0 && (
+              <div className="mcp-tags">
+                {mcp.tags.slice(0, 3).map(tag => (
+                  <Tag key={tag} size="small">{tag}</Tag>
+                ))}
+                {mcp.tags.length > 3 && <Tag size="small">+{mcp.tags.length - 3}</Tag>}
+              </div>
+            )}
+            
             <div className="mcp-meta">
+              <Tooltip title="服务类型">
+                <Tag color={mcp.type === 'Command' ? 'blue' : 'green'}>
+                  {mcp.type}
+                </Tag>
+              </Tooltip>
               <Tooltip title="更新时间">
                 <span className="meta-item">
                   <ClockCircleOutlined /> {mcp.createTime}
@@ -111,6 +114,12 @@ const MCPList = () => {
           </Card>
         ))}
       </div>
+      
+      {filteredMCPs.length === 0 && !loading && (
+        <div className="empty-state">
+          <p>没有找到匹配的 MCP 服务器</p>
+        </div>
+      )}
     </div>
   );
 };
