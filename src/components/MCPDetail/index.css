@@ -92,6 +92,14 @@
   font-size: 11px;
 }
 
+.token-warning {
+  color: #faad14;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .detail-content {
   background: white;
   padding: 24px;
