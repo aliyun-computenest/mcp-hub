@@ -8,24 +8,18 @@ services:
     image: aliyun-computenest/mcp-hub:latest
     container_name: mcp-hub
     ports:
-      - "${APP_PORT:-8080}:80"
+      - "${APP_PORT:-9000}:80"
     environment:
       - PUBLIC_IP=${PUBLIC_IP:-47.84.65.28}
       - PRIVATE_IP=${PRIVATE_IP:-192.168.1.100}
       - API_KEY=${API_KEY:-}
     volumes:
       # 挂载配置文件，方便修改
-      - ./public/config.json:/usr/share/nginx/html/config.json:ro
-      - ./public/config_detail.json:/usr/share/nginx/html/config_detail.json:ro
+      - ./root/config.json:/usr/share/nginx/html/config.json:ro
+      - ./root/pre-mcp-tools.json:/usr/share/nginx/html/config_detail.json:ro
       # 挂载自定义配置目录（可选）
       - ./config:/usr/share/nginx/html/config:ro
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
     networks:
       - mcp-network
     labels:
