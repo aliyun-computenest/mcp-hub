@@ -1,15 +1,18 @@
 version: '3.8'
 
 services:
-  mcp-registry-viewer:
-    build: .
-    container_name: mcp-registry-viewer
+  mcp-hub:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: aliyun-computenest/mcp-hub:latest
+    container_name: mcp-hub
     ports:
       - "${APP_PORT:-8080}:80"
     environment:
       - PUBLIC_IP=${PUBLIC_IP:-47.84.65.28}
       - PRIVATE_IP=${PRIVATE_IP:-192.168.1.100}
-      - API_KEY=${API_KEY:-K97iOtPxGe}
+      - API_KEY=${API_KEY:-}
     volumes:
       # 挂载配置文件，方便修改
       - ./public/config.json:/usr/share/nginx/html/config.json:ro
@@ -25,7 +28,15 @@ services:
       start_period: 40s
     networks:
       - mcp-network
+    labels:
+      - "com.github.repo=aliyun-computenest/mcp-hub"
+      - "com.docker.compose.project=mcp-hub"
 
 networks:
   mcp-network:
     driver: bridge
+    name: mcp-hub-network
+
+volumes:
+  mcp-config:
+    driver: local
