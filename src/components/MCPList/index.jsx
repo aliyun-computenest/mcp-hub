@@ -136,11 +136,6 @@ const MCPList = () => {
             
             
             <div className="mcp-meta">
-              <Tooltip title="服务类型">
-                <Tag color={mcp.type === 'SSE' ? 'blue' : mcp.type === 'StreamableHttp' ? 'green' : 'orange'}>
-                  {mcp.type}
-                </Tag>
-              </Tooltip>
               <Tooltip title="更新时间">
                 <span className="meta-item">
                   <ClockCircleOutlined /> {mcp.createTime}
