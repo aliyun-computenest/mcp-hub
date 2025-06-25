@@ -34,12 +34,36 @@ const MCPDetail = () => {
   }, [name]);
 
   const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text).then(() => {
-      message.success('复制成功');
-    }).catch(() => {
-      message.error('复制失败');
-    });
+    // 方法1：检查并使用现代 API
+    if (window.navigator && window.navigator.clipboard && window.navigator.clipboard.writeText) {
+      window.navigator.clipboard.writeText(text)
+          .then(() => message.success('复制成功'))
+          .catch(() => execCommandCopy(text));
+    } else {
+      // 方法2：使用传统方法
+      execCommandCopy(text);
+    }
   };
+
+  const execCommandCopy = (text) => {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none;';
+
+    document.body.appendChild(textArea);
+    textArea.select();
+
+    try {
+      const success = document.execCommand('copy');
+      message[success ? 'success' : 'error'](success ? '复制成功' : '复制失败，请手动复制');
+    } catch (error) {
+      console.error('复制失败:', error);
+      message.error('复制失败，请手动复制');
+    } finally {
+      document.body.removeChild(textArea);
+    }
+  };
+
 
   const handleToggleIp = async () => {
     const newIp = mcpService.toggleIpType();
