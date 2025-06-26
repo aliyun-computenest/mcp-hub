@@ -188,13 +188,6 @@ const MCPDetail = () => {
         </Button>
         
         <div className="header-main">
-          <div className="header-icon">
-            {typeof mcpData.icon === 'string' && mcpData.icon.startsWith('http') ? (
-              <img src={mcpData.icon} alt={mcpData.name} className="header-icon-img" />
-            ) : (
-              mcpData.icon
-            )}
-          </div>
           <div className="header-content">
             <h1>{mcpData.name}</h1>
             <p className="update-time">{mcpData.createTime}</p>
